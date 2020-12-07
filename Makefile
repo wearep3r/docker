@@ -28,7 +28,7 @@ publish-sem-rel:
 build:
 #> @docker image prune -f
 > docker buildx use wearep3r
-> docker buildx build --platform linux/amd64 --build-arg BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ') --build-arg BUILD_VERSION=$(shell backplane --version) --build-arg VCS_REF=$(shell git rev-parse --short HEAD) -t wearep3r/docker:latest --push .
+> docker buildx build --platform linux/amd64 --build-arg BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ') --build-arg BUILD_VERSION=$(shell git rev-parse --short HEAD) --build-arg VCS_REF=$(shell git rev-parse --short HEAD) -t wearep3r/docker:latest --push .
 
 .PHONY: dev
 dev: .SHELLFLAGS = ${DOCKER_SHELLFLAGS}

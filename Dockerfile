@@ -1,24 +1,8 @@
 ARG DOCKER_VERSION=19.03.13
-ARG COMPOSE_VERSION=1.27.4
-ARG BACKPLANE_VERSION=0.7.5
 
 FROM docker:${DOCKER_VERSION} AS docker-cli
 
 FROM python:3.9.0-slim-buster as build
-
-# RUN apk update \
-#     && apk add --no-cache \
-# 		ca-certificates \
-# 		python3-dev \
-# 		python3-pip \
-# 		libffi-dev \
-# 		openssl-dev \
-# 		gcc \
-# 		libc-dev \
-# 		make \
-# 		bash \
-# 		git \
-# 		curl
 
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
@@ -35,33 +19,11 @@ RUN apt-get update \
     python3-pip \
     zlib1g-dev 
     
-
 COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
-RUN \
-  mkdir -p /compose && \
-  if [ -z ${COMPOSE_VERSION+x} ]; then \
-      COMPOSE_VERSION=$(curl -sX GET "https://api.github.com/repos/docker/compose/releases/latest" \
-      | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-  fi && \
-  git clone https://github.com/docker/compose.git && \
-  cd /compose && \
-  git checkout "${COMPOSE_VERSION}" && \
-  pip3 install virtualenv==20.0.30 && \
-  pip3 install tox==3.19.0 && \
-  PY_ARG=$(printf "$(python3 -V)" | awk '{print $2}' | awk 'BEGIN{FS=OFS="."} NF--' | sed 's|\.||g' | sed 's|^|py|g') && \
-  sed -i "s|envlist = .*|envlist = ${PY_ARG},pre-commit|g" tox.ini && \
-  tox --notest && \
-  mkdir -p dist && \
-  chmod 777 dist && \
-  /compose/.tox/${PY_ARG}/bin/pip3 install -q -r requirements-build.txt && \
-  echo "$(script/build/write-git-sha)" > compose/GITSHA && \
-  export PATH="/compose/pyinstaller:${PATH}" && \
-  /compose/.tox/${PY_ARG}/bin/pyinstaller --exclude-module pycrypto --exclude-module PyInstaller docker-compose.spec && \
-  ls -la dist/ && \
-  ldd dist/docker-compose && \
-  mv dist/docker-compose /usr/local/bin && \
-  docker-compose version
+ARG BACKPLANE_VERSION=0.7.5
+ARG COMPOSE_VERSION=1.27.4
+RUN pip3 install ansible "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}" "docker-compose${COMPOSE_VERSION:+==}${COMPOSE_VERSION}"
 
 ARG HELM_VERSION=3.4.1
 ARG KUBECTL_VERSION=1.19.0
@@ -77,26 +39,12 @@ RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL
     && mv kubectl /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 
-RUN pip3 install ansible
-
-FROM python:3.9.0-slim-buster
-
-#COPY --from=build /compose/docker-compose-entrypoint.sh /usr/local/bin/docker-compose-entrypoint.sh
-COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
-COPY --from=build /usr/local/bin/docker-compose /usr/local/bin/docker-compose
-COPY --from=build /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=build /usr/local/bin/helm /usr/local/bin/helm
-
-#RUN pip3 install "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}"
-
-RUN groupadd -g 1000 docker \
-    && useradd -g docker -u 1000 docker
-    #backplane init
-
 COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-#ENTRYPOINT ["sh", "/usr/local/bin/docker-compose-entrypoint.sh"]
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && groupadd -g 1000 docker \
+    && useradd -g docker -u 1000 docker
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["sh"]
