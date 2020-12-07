@@ -1,5 +1,4 @@
 name: Docker Hub Exporter
-
 on:
   push:
     branches: master

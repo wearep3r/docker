@@ -1,16 +1,26 @@
-name: Bump version
+name: Auto-Release
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
+      - next
+      - next-major
+      - alpha
+      - beta
 jobs:
   release:
+    name: release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -23,7 +33,7 @@ jobs:
         run: "git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:refs/heads/v${{steps.semantic.outputs.new_release_major_version}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Published
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
