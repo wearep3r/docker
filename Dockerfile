@@ -17,7 +17,9 @@ RUN apt-get update \
     openssl \
     python3-dev \
     python3-pip \
-    zlib1g-dev 
+    zlib1g-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
     
 COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
