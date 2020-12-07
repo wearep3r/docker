@@ -1,5 +1,8 @@
 # Docker
 
+[!["Version"](https://img.shields.io/github/v/tag/wearep3r/docker?label=version)](https://github.com/wearep3r/docker)
+[!["p3r. Slack"](https://img.shields.io/badge/slack-@wearep3r/general-purple.svg?logo=slack&label=Slack)](https://join.slack.com/t/wearep3r/shared_invite/zt-d9ao21f9-pb70o46~82P~gxDTNy_JWw)
+
 This image contains tooling commonly needed when working with Docker in a GitOps context:
 
 - [Docker CLI](https://docs.docker.com/engine/reference/commandline/cli/)
