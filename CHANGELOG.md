@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/wearep3r/docker/compare/v1.1.0...v1.2.0) (2020-12-11)
+
+
+### Features
+
+* added openshift dependency ([a91573d](https://github.com/wearep3r/docker/commit/a91573d6339c60a2b5a121545d78e38660f39a04))
+
 # [1.1.0](https://github.com/wearep3r/docker/compare/v1.0.0...v1.1.0) (2020-12-11)
 
 
