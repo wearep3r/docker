@@ -25,7 +25,7 @@ COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
 ARG BACKPLANE_VERSION=0.7.5
 ARG COMPOSE_VERSION=1.27.4
-RUN pip3 install openshift jmespath ansible "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}" "docker-compose${COMPOSE_VERSION:+==}${COMPOSE_VERSION}"
+RUN pip3 install pyyaml openshift jmespath ansible "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}" "docker-compose${COMPOSE_VERSION:+==}${COMPOSE_VERSION}" openshift
 
 ARG HELM_VERSION=3.4.1
 ARG KUBECTL_VERSION=1.19.0
