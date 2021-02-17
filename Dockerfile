@@ -1,4 +1,4 @@
-ARG DOCKER_VERSION=19.03.13
+ARG DOCKER_VERSION=20.10.3
 
 FROM docker:${DOCKER_VERSION} AS docker-cli
 
@@ -25,10 +25,11 @@ COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
 ARG BACKPLANE_VERSION=0.7.5
 ARG COMPOSE_VERSION=1.27.4
-RUN pip3 install pyyaml openshift jmespath ansible "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}" "docker-compose${COMPOSE_VERSION:+==}${COMPOSE_VERSION}" openshift
+RUN pip3 install pyyaml openshift jmespath ansible "backplane${BACKPLANE_VERSION:+==}${BACKPLANE_VERSION}" "docker-compose${COMPOSE_VERSION:+==}${COMPOSE_VERSION}"
 
 ARG HELM_VERSION=3.4.1
 ARG KUBECTL_VERSION=1.19.0
+ARG PORTER_VERSION=v0.33.0
 
 RUN echo "curl -fsSL -o helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
     && curl -fsSL -o helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -40,6 +41,8 @@ RUN echo "curl -fsSL -o helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-li
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o kubectl \
     && mv kubectl /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
+
+RUN curl https://cdn.porter.sh/${PORTER_VERSION}/install-linux.sh | bash
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
